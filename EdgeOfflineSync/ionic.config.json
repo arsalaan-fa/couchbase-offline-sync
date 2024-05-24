@@ -1,0 +1,7 @@
+{
+  "name": "EdgeOfflineSync",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular"
+}

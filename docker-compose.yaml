@@ -1,0 +1,46 @@
+version: '3.5'
+
+services:
+  couchbase.local:
+    build:
+      context: misc/server
+      dockerfile: Dockerfile
+    hostname: couchbase.local
+    container_name: couchbase-server
+    entrypoint: "/scripts/startpoint.sh"
+    platform: linux/arm64/v8
+    environment:
+      - ADMIN_USERNAME=Administrator
+      - ADMIN_PASSWORD=password
+      - COUCHBASE_BUCKET=captain
+      - COUCHBASE_SYNC_GATEWAY_USERNAME=admin
+      - COUCHBASE_SYNC_GATEWAY_PASSWORD=password
+    ports:
+      - "8091:8091"
+      - "8092:8092"
+      - "8093:8093"
+      - "8094:8094"
+      - "11210:11210"
+    volumes:
+      - "couchbase_data:/opt/couchbase/var"
+
+  couchbase-sync-gateway:
+    image: couchbase/sync-gateway:3.1.4-community
+    volumes:
+      - ./misc/syncgw/config.json:/etc/sync_gateway/config.json
+    container_name: syncgw
+    hostname: sync-gateway
+    # comment this line, if you are using windows or linux x86_x64 bit operating system
+    # For macOS with Apple silicon; it will run directly
+    platform: linux/arm64
+    ports:
+      - "4984:4984"
+      - "4985:4985"
+    depends_on:
+      - couchbase.local
+
+volumes:
+  couchbase_data:
+    driver: local
+  # couchbase_cluster:
+  #   driver: local
